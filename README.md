@@ -1,4 +1,4 @@
-XBFQuiet
+XBeQuiet
 ========
 
-Xposed module to silence Brave Frontier
+Xposed module to silence any app

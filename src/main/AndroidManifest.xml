@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.raidzero.xposed.bfquiet"
+    package="com.raidzero.xposed.bequiet"
     android:versionCode="1"
     android:versionName="1.0">
 
@@ -19,7 +19,7 @@
             android:value="30" />
 
         <activity
-            android:name="com.raidzero.xposed.bfquiet.SettingsActivity"
+            android:name="com.raidzero.xposed.bequiet.SettingsActivity"
             android:label="@string/settings_activityTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
