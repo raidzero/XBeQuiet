@@ -1,20 +1,15 @@
 package com.raidzero.xposed.bequiet;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Debug;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceScreen;
+import android.preference.*;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,13 +32,15 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by raidzero on 4/13/14 10:16 AM
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private PackageManager pm = null;
+    private SharedPreferences prefs;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,5 +84,48 @@ public class SettingsActivity extends PreferenceActivity {
             // add to category
             targetCategory.addPreference(checkBoxPreference);
         }
+    }
+
+    protected void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Preference pref = findPreference(key);
+        CheckBoxPreference cbtp = (CheckBoxPreference) pref;
+        final String pkgName = key;
+
+        // present dialog asking to kill the app
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.kill_app_title);
+        builder.setMessage(R.string.kill_app_detail);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // loop over running processes so we can find and kill the right one
+                ActivityManager  manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                List<ActivityManager.RunningAppProcessInfo> listOfProcesses = manager.getRunningAppProcesses();
+                for (ActivityManager.RunningAppProcessInfo process : listOfProcesses)
+                {
+                    if (process.processName.contains(pkgName))
+                    {
+                        // Ends the app
+                        manager.restartPackage(process.processName);
+                        break;
+                    }
+                }
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }

@@ -6,6 +6,7 @@
     <string name="settings_enableTitle">Enable</string>
     <string name="settings_enableSummary">Mute sound</string>
     <string name="settings_header">Select app(s) to mute</string>
-    <string name="settings_muted">Muted</string>
-    <string name="settings_unmuted">Unmuted</string>
+    <string name="settings_mod_enabled">Module enabled</string>
+    <string name="kill_app_title">Kill app now?</string>
+    <string name="kill_app_detail">App needs to be restarted to take effect.</string>
 </resources>
